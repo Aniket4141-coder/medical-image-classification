@@ -1,0 +1,9 @@
+@"
+venv/
+__pycache__/
+*.pyc
+static/uploads/*
+!.gitkeep
+.ipynb_checkpoints/
+.DS_Store
+"@ | Set-Content .gitignore

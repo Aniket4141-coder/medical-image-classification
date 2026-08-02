@@ -1,0 +1,345 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Classification</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=2) }}">
+    <script defer src="{{ url_for('static', filename='js/script.js', v=2) }}"></script>
+</head>
+
+<body>
+    <div class="animated-background">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="blob blob-3"></span>
+        <span class="grid-overlay"></span>
+    </div>
+
+    <div class="page-shell">
+        <header class="topbar glass-card">
+            <div class="brand">
+                <div class="brand-mark">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <p class="eyebrow">Healthcare AI Platform</p>
+                    <h1>Brain Tumor MRI Classification</h1>
+                </div>
+            </div>
+
+            <button class="theme-toggle" type="button" id="themeToggle" aria-label="Toggle theme">
+                <i class="fa-solid fa-moon"></i>
+                <span>Theme</span>
+            </button>
+        </header>
+
+        <main class="dashboard">
+            <section class="hero glass-card">
+                <div class="hero-copy">
+                    <p class="eyebrow accent">AI Assisted Medical Imaging</p>
+                    <h2>Fast, secure brain tumor classification with a modern clinical interface.</h2>
+                    <p class="hero-text">
+                        Upload an MRI scan, review a clean preview, and get a clear prediction with confidence
+                        visualization designed for a professional healthcare workflow.
+                    </p>
+                    <div class="hero-highlights">
+                        <div><i class="fa-solid fa-shield-heart"></i><span>Secure Processing</span></div>
+                        <div><i class="fa-solid fa-bolt"></i><span>Rapid Inference</span></div>
+                        <div><i class="fa-solid fa-chart-line"></i><span>Confidence Insights</span></div>
+                    </div>
+                </div>
+
+                <div class="hero-panel">
+                    <div class="mini-stat">
+                        <span>Total Predictions</span>
+                        <strong>1,248</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span>Average Confidence</span>
+                        <strong>96.4%</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span>Last Prediction</span>
+                        <strong>Glioma</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <article class="stat-card glass-card">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <div>
+                        <span>Total Predictions</span>
+                        <strong>1,248</strong>
+                    </div>
+                </article>
+                <article class="stat-card glass-card">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <div>
+                        <span>Average Confidence</span>
+                        <strong>96.4%</strong>
+                    </div>
+                </article>
+                <article class="stat-card glass-card">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <div>
+                        <span>Last Prediction</span>
+                        <strong>Glioma</strong>
+                    </div>
+                </article>
+            </section>
+
+            <section class="content-grid">
+                <div class="left-column">
+                    <section class="glass-card upload-card">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Upload Scan</p>
+                                <h3>Drag and drop an MRI image</h3>
+                            </div>
+                            <i class="fa-solid fa-cloud-arrow-up section-icon"></i>
+                        </div>
+
+                        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                            <div class="drop-zone" id="dropZone">
+                                <input type="file" name="image" id="imageInput" required accept="image/*">
+                                <div class="drop-zone-copy">
+                                    <div class="drop-icon">
+                                        <i class="fa-solid fa-file-arrow-up"></i>
+                                    </div>
+                                    <h4>Drop your MRI scan here</h4>
+                                    <p>PNG, JPG, JPEG supported. The selected image will preview instantly.</p>
+                                    <div class="drop-actions">
+                                        <label for="imageInput" class="browse-btn">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                            Browse files
+                                        </label>
+                                        <span class="hint">or drag and drop</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="file-meta" id="fileMeta">
+                                <i class="fa-regular fa-image"></i>
+                                <span id="fileName">No file selected</span>
+                            </div>
+
+                            <div class="action-row">
+                                <button type="submit" class="predict-btn">
+                                    <i class="fa-solid fa-radar"></i>
+                                    Predict Tumor Type
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="glass-card preview-card">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Preview</p>
+                                <h3>Selected image</h3>
+                            </div>
+                            <i class="fa-solid fa-image section-icon"></i>
+                        </div>
+
+                        <div class="preview-frame">
+                            <img id="imagePreview" alt="MRI preview" hidden>
+                            <div class="preview-empty" id="previewEmpty">
+                                <i class="fa-regular fa-image"></i>
+                                <p>Your image preview will appear here before prediction.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="right-column">
+                    {% if prediction %}
+                    <section class="glass-card result-card">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Prediction Result</p>
+                                <h3>Model analysis complete</h3>
+                            </div>
+                            <i class="fa-solid fa-square-poll-vertical section-icon"></i>
+                        </div>
+
+                        {% set prediction_lower = prediction|lower %}
+                        {% if 'glioma' in prediction_lower %}
+                        {% set badge_class = 'badge-glioma' %}
+                        {% elif 'meningioma' in prediction_lower %}
+                        {% set badge_class = 'badge-meningioma' %}
+                        {% elif 'no tumor' in prediction_lower %}
+                        {% set badge_class = 'badge-no-tumor' %}
+                        {% elif 'pituitary' in prediction_lower %}
+                        {% set badge_class = 'badge-pituitary' %}
+                        {% else %}
+                        {% set badge_class = 'badge-default' %}
+                        {% endif %}
+
+                        <div class="result-badge {{ badge_class }}">
+                            <i class="fa-solid fa-badge-check"></i>
+                            <span>{{ prediction }}</span>
+                        </div>
+
+                        <div class="result-layout">
+                            <div class="confidence-ring" style="--confidence: {{ (confidence * 100) | round(0) }};">
+                                <div class="ring-inner">
+                                    <strong>{{ "%.0f"|format(confidence * 100) }}%</strong>
+                                    <span>Confidence</span>
+                                </div>
+                            </div>
+
+                            <div class="result-copy">
+                                <p class="result-label">Confidence score</p>
+                                <h4 id="animatedConfidence" data-target="{{ (confidence * 100) | round(0) }}">0%</h4>
+                                <p class="result-text">
+                                    The classifier returned a high-confidence prediction for the uploaded MRI scan.
+                                </p>
+                                <div class="result-note">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>This interface is for demonstration and review only.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="result-image">
+                            <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded MRI scan">
+                        </div>
+                    </section>
+                    {% else %}
+                    <section class="glass-card result-card empty-state">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Prediction Result</p>
+                                <h3>Ready for inference</h3>
+                            </div>
+                            <i class="fa-solid fa-stethoscope section-icon"></i>
+                        </div>
+                        <p class="empty-copy">
+                            Upload a scan on the left to see a polished prediction card with confidence analytics.
+                        </p>
+                    </section>
+                    {% endif %}
+
+                    <section class="glass-card feature-card">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Why this interface</p>
+                                <h3>Core benefits</h3>
+                            </div>
+                        </div>
+
+                        <div class="feature-list">
+                            <article>
+                                <i class="fa-solid fa-brain"></i>
+                                <div>
+                                    <h4>AI Powered</h4>
+                                    <p>Built to present model output with clear clinical context.</p>
+                                </div>
+                            </article>
+                            <article>
+                                <i class="fa-solid fa-bolt"></i>
+                                <div>
+                                    <h4>Fast Prediction</h4>
+                                    <p>Optimized for quick review and immediate decision support.</p>
+                                </div>
+                            </article>
+                            <article>
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <div>
+                                    <h4>High Accuracy</h4>
+                                    <p>Highlights model confidence with a polished visual indicator.</p>
+                                </div>
+                            </article>
+                            <article>
+                                <i class="fa-solid fa-lock"></i>
+                                <div>
+                                    <h4>Secure Processing</h4>
+                                    <p>Clean, minimal presentation suitable for sensitive healthcare workflows.</p>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="bottom-grid">
+                <section class="glass-card history-card">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Prediction History</p>
+                            <h3>Recent activity</h3>
+                        </div>
+                        <i class="fa-solid fa-clock-rotate-left section-icon"></i>
+                    </div>
+
+                    <div class="history-list">
+                        <article class="history-item">
+                            <div class="history-pill pill-glioma">Glioma</div>
+                            <div>
+                                <h4>Case 1042</h4>
+                                <p>Confidence 98.2% - 12 minutes ago</p>
+                            </div>
+                        </article>
+                        <article class="history-item">
+                            <div class="history-pill pill-pituitary">Pituitary</div>
+                            <div>
+                                <h4>Case 1041</h4>
+                                <p>Confidence 97.1% - 36 minutes ago</p>
+                            </div>
+                        </article>
+                        <article class="history-item">
+                            <div class="history-pill pill-no-tumor">No Tumor</div>
+                            <div>
+                                <h4>Case 1040</h4>
+                                <p>Confidence 95.6% - 1 hour ago</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="glass-card workflow-card">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Workflow</p>
+                            <h3>Simple clinical flow</h3>
+                        </div>
+                    </div>
+
+                    <div class="workflow-steps">
+                        <div><span>01</span><p>Upload MRI scan</p></div>
+                        <div><span>02</span><p>Review preview and start prediction</p></div>
+                        <div><span>03</span><p>Interpret result and confidence</p></div>
+                    </div>
+                </section>
+            </section>
+        </main>
+
+        <footer class="footer glass-card">
+            <div>
+                <p class="eyebrow">Project Information</p>
+                <h3>Brain Tumor MRI Classification</h3>
+            </div>
+            <p class="footer-text">
+                Premium frontend redesign for a Flask-based medical AI classification demo.
+            </p>
+        </footer>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" hidden>
+        <div class="loading-card glass-card">
+            <div class="spinner"></div>
+            <h3>Analyzing MRI scan</h3>
+            <p>Please wait while the model processes the uploaded image.</p>
+        </div>
+    </div>
+</body>
+
+</html>
